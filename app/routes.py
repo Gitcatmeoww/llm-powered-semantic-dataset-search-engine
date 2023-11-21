@@ -1,6 +1,19 @@
 from app import app, db
 from flask import jsonify
 from sqlalchemy import text
+from flask import render_template
+
+
+@app.route('/')
+def index():
+    try:
+        with db.engine.connect() as connection:
+            result = connection.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))
+            tables = [row[0] for row in result]
+        return render_template('index.html', tables=tables)
+    except Exception as e:
+        return render_template('error.html')
+
 
 @app.route('/testdb')
 def testdb():
