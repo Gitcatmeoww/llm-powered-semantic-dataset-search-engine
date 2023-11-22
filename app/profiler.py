@@ -1,7 +1,9 @@
 from app import db
 import pandas as pd
 from sqlalchemy import text
+import base64
 
+NUM_TRUNCATED_ENTRIES = 2
 
 # Profiling aspect 1: table schema
 def get_table_schema(table_name):
@@ -34,15 +36,35 @@ def get_column_stats(table_name):
     stats = non_binary_df.describe(include='all').transpose().fillna('')
     return stats.to_dict()
 
+# Profiling aspect 3: truncated N entries
+def get_truncated_entries(table_name):
+    with db.engine.connect() as conn:
+        query = f"SELECT * FROM {table_name} LIMIT {NUM_TRUNCATED_ENTRIES};"
+        df = pd.read_sql(query, conn)
+    
+    # Apply the conversion to each cell in the DataFrame
+    df = df.applymap(convert_memoryview)
+
+    return df.to_dict(orient='records')
+
+# Helper function to convert memoryview objects to a string format
+# Note: the picture column in staff table is a binary type
+def convert_memoryview(item):
+    if isinstance(item, memoryview):
+        return base64.b64encode(item.tobytes()).decode('utf-8')
+    return item
+
 # Aggregate metadata for a given table
 def profile_table(table_name):
     schema = get_table_schema(table_name)
     stats = get_column_stats(table_name)
+    truncated_entries = get_truncated_entries(table_name)
     
     # Combine all metadata into a single dictionary
     metadata = {
         'schema': schema,
         'stats': stats,
+        'truncated_entries': truncated_entries,
     }
     
     return metadata

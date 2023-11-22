@@ -18,7 +18,6 @@ def index():
     except Exception as e:
         return render_template('error.html')
 
-
 @app.route('/testdb')
 def testdb():
     try:
