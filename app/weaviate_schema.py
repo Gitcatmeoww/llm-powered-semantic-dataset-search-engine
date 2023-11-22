@@ -1,5 +1,6 @@
 import weaviate
 
+
 def create_schema(client):
     class_obj = {
         "class": "Dataset",
@@ -25,3 +26,11 @@ def create_schema(client):
     
     schema = {"classes": [class_obj]}
     client.schema.create(schema)
+
+
+def delete_class_if_exists(client, class_name):
+    try:
+        client.schema.delete_class(class_name)
+    except weaviate.exceptions.UnexpectedStatusCodeException as e:
+        if e.status_code != 404:
+            raise e
