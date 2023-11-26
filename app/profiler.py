@@ -3,6 +3,7 @@ import pandas as pd
 from sqlalchemy import text
 import base64
 
+# Specify the number of truncated entries in the database
 NUM_TRUNCATED_ENTRIES = 2
 
 # Profiling aspect 1: table schema

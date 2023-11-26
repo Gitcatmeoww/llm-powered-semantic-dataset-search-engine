@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, render_template
 from sqlalchemy import text
-from .profiler import profile_table, profile_all_tables
+from .profiler import profile_all_tables
 
 
 @app.route('/')
@@ -18,6 +18,7 @@ def index():
     except Exception as e:
         return render_template('error.html')
 
+# Below are routes for testing purposes
 @app.route('/testdb')
 def testdb():
     try:
@@ -42,3 +43,13 @@ def testdb():
 def test_profiling():
     profiles = profile_all_tables()
     return jsonify(profiles)
+
+from app import app
+
+@app.route('/weaviate_status')
+def weaviate_status():
+    try:
+        status = app.weaviate_client.is_ready()
+        return f"Weaviate is ready: {status}", 200
+    except Exception as e:
+        return f"Error checking Weaviate status: {str(e)}", 500

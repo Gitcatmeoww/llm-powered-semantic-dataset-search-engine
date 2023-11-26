@@ -1,17 +1,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
-from .weaviate_schema import create_schema, delete_class_if_exists
-import weaviate
+from .weaviate_services import initialize_weaviate_client
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-# Initialize Weaviate client and create schema
-weaviate_client = weaviate.Client("http://localhost:8080")
-delete_class_if_exists(weaviate_client, "Dataset")
-create_schema(weaviate_client)
+# Initialize Weaviate client
+app.weaviate_client = initialize_weaviate_client(app.config['WEAVIATE_URL'])
 
 # Import routes after the Flask app has been created and configured
 from app import routes

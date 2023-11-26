@@ -5,6 +5,7 @@ We use [`pagila`](https://github.com/devrimgunduz/pagila) as the sample database
 ### Running This System
 
 ```
+docker compose up
 source venv/bin/activate
 pip install -r requirements.txt
 python run.py
