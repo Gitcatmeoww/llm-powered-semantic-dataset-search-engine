@@ -32,7 +32,32 @@ def insert_profiles():
         return jsonify({"message": "Data insertion into Weaviate successful"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/search', methods=['POST'])
+def search():
+    data = request.get_json()
+    query = data['query']
     
+    # Here, replace with the actual Weaviate search query you want to perform
+    search_result = weaviate_client.query.raw("""
+    {
+      Get {
+        TableProfile(
+          nearText: {
+            concepts: ["{}"]
+          }
+        ) {
+          tableName
+        }
+      }
+    }
+    """.format(query))
+    
+    # Extract table names from the search results
+    tables = [item['tableName'] for item in search_result['data']['Get']['TableProfile']]
+    
+    return jsonify({'results': tables})
+
 # Below are routes for testing purposes
 @app.route('/testdb')
 def testdb():
