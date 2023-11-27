@@ -1,3 +1,7 @@
+document.getElementById('searchButton').addEventListener('click', function () {
+    searchTable();
+});
+
 function searchTable() {
     // Get the input value
     var input = document.getElementById('searchInput').value;
@@ -22,7 +26,8 @@ function searchTable() {
                 // Populate the list with new results
                 data.results.forEach(function (item) {
                     var li = document.createElement('li');
-                    li.textContent = item;
+                    // Assuming the property that contains the table name is 'tableName'
+                    li.textContent = item.tableName;
                     list.appendChild(li);
                 });
             } else {

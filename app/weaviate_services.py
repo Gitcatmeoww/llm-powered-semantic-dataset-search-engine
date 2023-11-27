@@ -51,7 +51,32 @@ def convert_timestamps(data):
         return data.isoformat()
     else:
         return data
-
     
-# def search_datasets(query_vector):
-#     return client.query.get("Dataset", ["name", "description"]).with_vector(query_vector).with_limit(5).do()
+def search_dataset(client, query, collection_name="TableProfile"):
+    nearText = {
+        "concepts": [query],
+        "distance": 0.7,
+    }
+
+    properties = [
+        "tableName", 
+        "schema", 
+        "stats",
+        "entries",
+        "_additional {certainty distance}"
+    ]
+
+    result = (
+        client.query
+        .get(collection_name, properties)
+        .with_near_text(nearText)
+        .with_limit(10)
+        .do()
+    )
+    
+    # Check for errors
+    if ("errors" in result):
+        raise Exception(result["errors"][0]['message'])
+    
+    return result["data"]["Get"][collection_name]
+    

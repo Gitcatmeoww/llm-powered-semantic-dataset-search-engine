@@ -11,12 +11,9 @@
     <h1>LLM-Powered Semantic Dataset Search Engine</h1>
 
     <!-- Search Bar -->
-    <input
-      type="text"
-      id="searchInput"
-      onkeyup="searchTable()"
-      placeholder="Search for tables..."
-    />
+    <input type="text" id="searchInput" placeholder="Search for tables..." />
+    <!-- Search Button -->
+    <button id="searchButton" onclick="searchTable()">Search</button>
 
     <!-- Table Names Display -->
     <ul id="tablesList">

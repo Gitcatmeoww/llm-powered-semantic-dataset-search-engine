@@ -2,7 +2,7 @@ from app import app, db, weaviate_client
 from flask import jsonify, render_template, request
 from sqlalchemy import text
 from .profiler import profile_all_tables, profile_table
-from .weaviate_services import insert_profile_data
+from .weaviate_services import insert_profile_data, search_dataset
 import openai
 
 
@@ -35,28 +35,15 @@ def insert_profiles():
 
 @app.route('/search', methods=['POST'])
 def search():
-    data = request.get_json()
-    query = data['query']
-    
-    # Here, replace with the actual Weaviate search query you want to perform
-    search_result = weaviate_client.query.raw("""
-    {
-      Get {
-        TableProfile(
-          nearText: {
-            concepts: ["{}"]
-          }
-        ) {
-          tableName
-        }
-      }
-    }
-    """.format(query))
-    
-    # Extract table names from the search results
-    tables = [item['tableName'] for item in search_result['data']['Get']['TableProfile']]
-    
-    return jsonify({'results': tables})
+    try:
+        query = request.json['query']
+        result = search_dataset(weaviate_client, query)
+
+        return jsonify({"results": result}), 200
+    except Exception as e:
+        print(f"Server error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 
 # Below are routes for testing purposes
 @app.route('/testdb')
