@@ -47,38 +47,3 @@ def create_schema(client):
     }
 
     create_class_if_not_exists(client, schema)
-        
-    # schema = {
-    #     "classes": [
-    #         {
-    #             "class": "TableProfile",
-    #             "description": "Profile of a database table",
-    #             "vectorizer": "text2vec-openai",
-    #             "properties": [
-    #                 {
-    #                     "name": "tableName",
-    #                     "dataType": ["string"],
-    #                     "description": "The name of the table",
-    #                 },
-    #                 {
-    #                     "name": "schema",
-    #                     "dataType": ["text"],
-    #                     "description": "Schema of the table",
-    #                 },
-    #                 {
-    #                     "name": "stats",
-    #                     "dataType": ["text"],
-    #                     "description": "Statistical summary of the table",
-    #                 },
-    #                 {
-    #                     "name": "entries",
-    #                     "dataType": ["text"],
-    #                     "description": "Sample entries from the table",
-    #                 },
-    #             ],
-    #         },
-    #     ]
-    # }
-
-    # for class_schema in schema['classes']:
-    #     create_class_if_not_exists(client, class_schema)

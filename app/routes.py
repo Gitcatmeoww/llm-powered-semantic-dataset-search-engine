@@ -1,5 +1,5 @@
 from app import app, db, weaviate_client
-from flask import jsonify, render_template
+from flask import jsonify, render_template, request
 from sqlalchemy import text
 from .profiler import profile_all_tables, profile_table
 from .weaviate_services import insert_profile_data
@@ -20,6 +20,19 @@ def index():
     except Exception as e:
         return render_template('error.html')
 
+@app.route('/insert_data_to_weaviate')
+def insert_profiles():
+    # Get the profiled data
+    # data = profile_table("actor")
+    data = profile_all_tables()
+
+    # Insert the profiled data into Weaviate
+    try:
+        insert_profile_data(weaviate_client, data)
+        return jsonify({"message": "Data insertion into Weaviate successful"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 # Below are routes for testing purposes
 @app.route('/testdb')
 def testdb():
@@ -72,25 +85,13 @@ def insert_hardcoded_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/insert_data_to_weaviate')
-def insert_profiles():
-    # Get the profiled data
-    data = profile_table("actor")
-    # data = profile_all_tables()
-
-    # Insert the profiled data into Weaviate
-    try:
-        insert_profile_data(weaviate_client, data)
-        return jsonify({"message": "Data insertion into Weaviate successful"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 @app.route('/verify_weaviate_data')
 def verify_weaviate_data():
     query = """
     {
       Get {
         TableProfile {
+          _additional { id }
           tableName
           schema
           stats
@@ -103,6 +104,20 @@ def verify_weaviate_data():
     try:
         result = weaviate_client.query.raw(query)
         return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete_weaviate_data', methods=['POST'])
+def delete_weaviate_data():
+    data = request.get_json()
+    ids = data.get('ids', [])
+    
+    try:
+        for id in ids:
+            weaviate_client.data_object.delete(id, "TableProfile")
+            print(f"Deleted object with id: {id}")
+
+        return jsonify({"message": "Deletion successful"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
