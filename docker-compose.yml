@@ -20,15 +20,17 @@ services:
       - "8080"
       - --scheme
       - http
-    image: semitechnologies/weaviate:1.22.4
+    image: semitechnologies/weaviate:1.22.5
     ports:
       - 8080:8080
     restart: on-failure:0
+    volumes:
+      - /var/weaviate:/var/lib/weaviate
     environment:
       OPENAI_APIKEY: ${OPENAI_APIKEY}
       QUERY_DEFAULTS_LIMIT: 25
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
       PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
       DEFAULT_VECTORIZER_MODULE: "text2vec-openai"
-      ENABLE_MODULES: "text2vec-openai,generative-openai"
-      CLUSTER_HOSTNAME: "node1"
+      ENABLE_MODULES: "text2vec-openai,qna-openai"
+      CLUSTER_HOSTNAME: "openai-weaviate-cluster"

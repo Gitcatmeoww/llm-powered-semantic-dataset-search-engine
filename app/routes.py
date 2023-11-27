@@ -1,7 +1,9 @@
-from app import app, db
+from app import app, db, weaviate_client
 from flask import jsonify, render_template
 from sqlalchemy import text
-from .profiler import profile_all_tables
+from .profiler import profile_all_tables, profile_table
+from .weaviate_services import insert_profile_data
+import openai
 
 
 @app.route('/')
@@ -41,15 +43,80 @@ def testdb():
 
 @app.route('/test_profiling')
 def test_profiling():
-    profiles = profile_all_tables()
+    profiles = profile_table("actor")
+    # profiles = profile_all_tables()
     return jsonify(profiles)
-
-from app import app
 
 @app.route('/weaviate_status')
 def weaviate_status():
     try:
-        status = app.weaviate_client.is_ready()
+        status = weaviate_client.is_ready()
         return f"Weaviate is ready: {status}", 200
     except Exception as e:
         return f"Error checking Weaviate status: {str(e)}", 500
+
+@app.route('/insert_hardcoded_data')
+def insert_hardcoded_data():
+    try:
+        # Hardcoded data
+        data = {
+            "tableName": "test_table",
+            "schema": "Column1: int, Column2: string",
+            "stats": "Count: 100, Mean: 50",
+            "entries": "Entry1, Entry2"
+        }
+
+        # Insert data into Weaviate
+        weaviate_client.data_object.create(data_object=data, class_name="TableProfile")
+        return jsonify({"message": "Hardcoded data inserted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/insert_data_to_weaviate')
+def insert_profiles():
+    # Get the profiled data
+    data = profile_table("actor")
+    # data = profile_all_tables()
+
+    # Insert the profiled data into Weaviate
+    try:
+        insert_profile_data(weaviate_client, data)
+        return jsonify({"message": "Data insertion into Weaviate successful"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/verify_weaviate_data')
+def verify_weaviate_data():
+    query = """
+    {
+      Get {
+        TableProfile {
+          tableName
+          schema
+          stats
+          entries
+        }
+      }
+    }
+    """
+
+    try:
+        result = weaviate_client.query.raw(query)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/test-openai-api')
+def test_openai_api():
+    try:
+        openai.api_key = app.config["OPENAI_APIKEY"]
+
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt="This is a test.",
+            max_tokens=5
+        )
+
+        return jsonify({"message": "OpenAI API key is working", "response": response}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

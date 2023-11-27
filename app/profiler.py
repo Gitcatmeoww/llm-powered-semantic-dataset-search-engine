@@ -44,7 +44,7 @@ def get_truncated_entries(table_name):
         df = pd.read_sql(query, conn)
     
     # Apply the conversion to each cell in the DataFrame
-    df = df.applymap(convert_memoryview)
+    df = df.map(convert_memoryview)
 
     return df.to_dict(orient='records')
 

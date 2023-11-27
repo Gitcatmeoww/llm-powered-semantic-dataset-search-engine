@@ -10,3 +10,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 python run.py
 ```
+
+### Weaviate Server
+
+Meta information about the Weaviate instance: `http://localhost:8080/v1/meta`
+Check the specified classes and vectorizers: `http://localhost:8080/v1/schema`
