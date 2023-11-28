@@ -1,17 +1,41 @@
-### System Overview
+# LLM-Powered Semantic Dataset Search Engine
 
-We use [`pagila`](https://github.com/devrimgunduz/pagila) as the sample database for the system.
+## Description
 
-### Running This System
+This project is a web application that enables users to perform semantic and keyword-based searches on datasets. It leverages a vector database [`weaviate`](https://weaviate.io/) for semantic understanding and provides a user-friendly interface for data interaction, with [`pagila`](https://github.com/devrimgunduz/pagila) as the sample dataset.
 
-```
-docker compose up
-source venv/bin/activate
+## System Pipeline
+
+![Alt text](system_pipeline.png)
+
+Our system pipeline employs an LLM-powered approach for efficient dataset discovery, catering to specific user information needs. It includes data profiling, natural language query processing, dataset embedding, and dataset ranking based on semantic relevance.
+
+## Prerequisites
+
+- Python 3.x
+- Docker
+- Virtual environment
+
+## Installation
+
+```bash
+git clone https://github.com/Gitcatmeoww/llm-powered-semantic-dataset-search-engine.git
+cd llm-powered-semantic-dataset-search-engine
 pip install -r requirements.txt
+```
+
+## Usage
+
+To start the server, run:
+
+```bash
+docker-compose up -d
+source venv/bin/activate
 python run.py
 ```
 
-### Weaviate Server
+Navigate to http://localhost:5000 in your web browser to access the application.
 
-- Meta information about the Weaviate instance: `http://localhost:8080/v1/meta`
-- Check the specified classes and vectorizers: `http://localhost:8080/v1/schema`
+## License
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
