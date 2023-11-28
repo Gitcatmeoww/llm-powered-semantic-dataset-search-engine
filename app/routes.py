@@ -33,11 +33,37 @@ def insert_profiles():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/search', methods=['POST'])
+@app.route('/semantic_search', methods=['POST'])
 def search():
     try:
         query = request.json['query']
         result = search_dataset(weaviate_client, query)
+
+        return jsonify({"results": result}), 200
+    except Exception as e:
+        print(f"Server error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/keyword_search', methods=['POST'])
+def keyword_search():
+    try:
+        query = request.json['query']
+        result = weaviate_client.query.raw("""
+        {
+          Get {
+            TableProfile (where: {
+              operator: Equal
+              path: ["tableName", "schema", "stats", "entries"]
+              valueString: "%s"
+            }) {
+              tableName
+              schema
+              stats
+              entries
+            }
+          }
+        }
+        """ % query)
 
         return jsonify({"results": result}), 200
     except Exception as e:
