@@ -3,22 +3,38 @@
   <head>
     <title>LLM-Powered Semantic Dataset Search Engine</title>
     <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
   </head>
+
   <body>
     <h1>LLM-Powered Semantic Dataset Search Engine</h1>
 
     <!-- Search Bar -->
     <input type="text" id="searchInput" placeholder="Search for tables..." />
     <!-- Search Button -->
-    <button id="searchButton" onclick="searchTable()">Semantic Search</button>
-    <!-- Reset Button -->
-    <button id="resetButton" onclick="resetTable()">Reset</button>
+    <button id="searchButton" onclick="searchTable()">
+      <i class="fas fa-search"></i>
+      Semantic Search
+    </button>
     <!-- Keyword Search Button -->
     <button id="keywordSearchButton" onclick="keywordSearchTable()">
+      <i class="fas fa-key"></i>
       Keyword Search
+    </button>
+    <!-- Reset Button -->
+    <button id="resetButton" onclick="resetTable()">
+      <i class="fas fa-undo"></i>
+      Reset
     </button>
 
     <!-- Table Names Display -->
