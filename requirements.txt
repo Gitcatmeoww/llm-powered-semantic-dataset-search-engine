@@ -1,10 +1,10 @@
 Flask
 Flask-SQLAlchemy
+Flask-CORS
 psycopg2-binary
 python-dotenv
 numpy
 pandas
 weaviate-client
 openai
-transformers
-torch
+pytest
