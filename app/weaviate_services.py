@@ -52,7 +52,7 @@ def convert_timestamps(data):
     else:
         return data
     
-def search_dataset(client, query, collection_name="TableProfile"):
+def semantic_search(client, query, collection_name="TableProfile"):
     nearText = {
         "concepts": [query],
         "distance": 0.7,
@@ -80,3 +80,25 @@ def search_dataset(client, query, collection_name="TableProfile"):
     
     return result["data"]["Get"][collection_name]
     
+def keyword_search(client, query, collection_name="TableProfile"):
+    properties = [
+        "tableName", 
+        "schema", 
+        "stats",
+        "entries",
+    ]
+
+    result = (
+        client.query
+        .get(collection_name, properties)
+        .with_bm25(query=query)
+        .with_additional("score")
+        .with_limit(10)
+        .do()
+    )
+    
+    # Check for errors
+    if ("errors" in result):
+        raise Exception(result["errors"][0]['message'])
+    
+    return result["data"]["Get"][collection_name]

@@ -2,7 +2,7 @@ from app import app, db, weaviate_client
 from flask import jsonify, render_template, request
 from sqlalchemy import text
 from .profiler import profile_all_tables, profile_table
-from .weaviate_services import insert_profile_data, search_dataset
+from .weaviate_services import insert_profile_data, semantic_search, keyword_search as keyword_search_service
 import openai
 
 
@@ -37,7 +37,7 @@ def insert_profiles():
 def search():
     try:
         query = request.json['query']
-        result = search_dataset(weaviate_client, query)
+        result = semantic_search(weaviate_client, query)
 
         return jsonify({"results": result}), 200
     except Exception as e:
@@ -48,22 +48,7 @@ def search():
 def keyword_search():
     try:
         query = request.json['query']
-        result = weaviate_client.query.raw("""
-        {
-          Get {
-            TableProfile (where: {
-              operator: Equal
-              path: ["tableName", "schema", "stats", "entries"]
-              valueString: "%s"
-            }) {
-              tableName
-              schema
-              stats
-              entries
-            }
-          }
-        }
-        """ % query)
+        result = keyword_search_service(weaviate_client, query)
 
         return jsonify({"results": result}), 200
     except Exception as e:
