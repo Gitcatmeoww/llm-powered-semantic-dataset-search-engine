@@ -1,10 +1,27 @@
 import pytest
 import requests
 
-# Sample test data
+# Define test queries
 TEST_QUERIES = [
+    # Below queries are curated for location-related tables
+    {"query": "address"},
+    {"query": "location"},
+    {"query": "district"},
+    {"query": "neighborhood"},
+    {"query": "What table should I use if I want to count the number of all addresses"},
+    # Below queries are curated for product-related tables
     {"query": "film"},
-    {"query": "actor"},
+    {"query": "movie"},
+    {"query": "length"},
+    {"query": "timespan"},
+    {"query": "What table should I use if I want to compare the stock across different shops"},
+    # Below queries are curated for transaction-related tables
+    {"query": "rental"},
+    {"query": "lease"},
+    {"query": "payment_date"},
+    {"query": "transaction_time"},
+    {"query": "partitioned table"},
+    {"query": "What table should I use if I want to calculate the average customer rental length"},
 ]
 
 
